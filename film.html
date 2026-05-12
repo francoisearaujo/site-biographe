@@ -20,7 +20,15 @@ const sequence=[{t:0,text:"LES INVISIBLES"},{t:5000,text:"Et tout à coup, je la
 let started=false;
 function startFilm(){if(started)return;started=true;document.getElementById("startscreen").style.display="none";const film=document.getElementById("film");film.style.display="block";const pavane=document.getElementById("pavane");pavane.volume=1;pavane.loop=false;pavane.play();sequence.forEach((item)=>{setTimeout(()=>{showLine(item.text)},item.t)});setTimeout(endFilm,133000)}
 function showLine(text){const film=document.getElementById("film");const fade=document.getElementById("fade");const line=document.createElement("div");line.className="line";line.innerText=text;film.appendChild(line);setTimeout(()=>{line.style.opacity=1},200);setTimeout(()=>{line.style.opacity=0;fade.style.opacity=1;setTimeout(()=>{fade.style.opacity=0},1000)},5200);setTimeout(()=>{line.remove()},8000)}
-function endFilm(){const pavane=document.getElementById("pavane");const portraitScene=document.getElementById("portraitScene");const film=document.getElementById("film");const credit=document.getElementById("credit");const personalMusic=document.getElementById("personalMusic");const photo=document.getElementById("photo");const signature=document.querySelector(".signature");let fadeAudio=setInterval(()=>{if(pavane.volume>0.05){pavane.volume-=0.05}else{clearInterval(fadeAudio);pavane.pause();pavane.currentTime=0;film.style.display="none";credit.style.display="none";portraitScene.style.display="flex";setTimeout(()=>{photo.style.opacity=1;photo.style.transform="scale(1.08)"},600);setTimeout(()=>{signature.style.opacity=1},1800);personalMusic.play();setTimeout(showBook,65000);personalMusic.onended=showBook}},250)}
+function endFilm(){const pavane=document.getElementById("pavane");const portraitScene=document.getElementById("portraitScene");const film=document.getElementById("film");const credit=document.getElementById("credit");const personalMusic=document.getElementById("personalMusic");const photo=document.getElementById("photo");const signature=document.querySelector(".signature");let fadeAudio=setInterval(()=>{if(pavane.volume>0.05){pavane.volume-=0.05}else{clearInterval(fadeAudio);pavane.pause();pavane.currentTime=0;film.style.display="none";portraitScene.style.display="flex";
+
+photo.style.opacity=1;
+
+signature.style.opacity=1;credit.style.display="none";setTimeout(()=>{photo.style.opacity=1;photo.style.transform="scale(1.08)"},600);setTimeout(()=>{signature.style.opacity=1},1800);setTimeout(()=>{
+
+personalMusic.play();
+
+},800);setTimeout(showBook,65000);personalMusic.onended=showBook}},250)}
 function showBook(){document.getElementById("portraitScene").style.display="none";document.getElementById("bookSection").style.display="block";document.body.classList.remove("locked");window.scrollTo(0,0)}
 </script>
 </body>
