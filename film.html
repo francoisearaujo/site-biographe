@@ -26,7 +26,16 @@ photo.style.opacity=1;
 
 signature.style.opacity=1;credit.style.display="none";setTimeout(()=>{photo.style.opacity=1;photo.style.transform="scale(1.08)"},600);setTimeout(()=>{signature.style.opacity=1},1800);setTimeout(()=>{
 
+personalMusic.muted=true;
+
 personalMusic.play();
+
+setTimeout(()=>{
+
+personalMusic.muted=false;
+
+},300);
+
 
 },800);setTimeout(showBook,65000);personalMusic.onended=showBook}},250)}
 function showBook(){document.getElementById("portraitScene").style.display="none";document.getElementById("bookSection").style.display="block";document.body.classList.remove("locked");window.scrollTo(0,0)}
