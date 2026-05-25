@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Clignancourt — Un autre ailleurs</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #202633 0%, #080b10 55%, #020305 100%);
+      font-family: Georgia, "Times New Roman", serif;
+      color: #eee8dc;
+    }
+
+    .film {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      perspective: 900px;
+    }
+
+    .window {
+      position: absolute;
+      inset: 5vh 7vw;
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: inset 0 0 90px rgba(0,0,0,0.9), 0 0 60px rgba(0,0,0,0.55);
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 35%, rgba(0,0,0,0.78) 100%);
+      z-index: 9;
+      pointer-events: none;
+    }
+
+    .snow {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .flake {
+      position: absolute;
+      top: -10vh;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.85);
+      animation: snowDrive linear infinite;
+    }
+
+    @keyframes snowDrive {
+      0% {
+        transform: translate3d(20vw, -10vh, -200px) scale(0.4);
+        opacity: 0;
+      }
+      12% { opacity: 0.9; }
+      100% {
+        transform: translate3d(-25vw, 120vh, 480px) scale(1.9);
+        opacity: 0;
+      }
+    }
+
+    .content {
+      position: absolute;
+      inset: 0;
+      z-index: 7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8vw;
+      transform-style: preserve-3d;
+    }
+
+    .card {
+      max-width: 820px;
+      transform-style: preserve-3d;
+      animation: carMovement 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes carMovement {
+      from { transform: translateZ(-80px) translateY(18px) scale(0.96); }
+      to { transform: translateZ(90px) translateY(-18px) scale(1.04); }
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 6vw, 5.8rem);
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      line-height: 1;
+      text-shadow: 0 12px 35px rgba(0,0,0,0.9);
+    }
+
+    h2 {
+      margin: 1.2rem 0 0;
+      font-size: clamp(1.2rem, 2.5vw, 2.2rem);
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(238,232,220,0.72);
+      letter-spacing: 0.04em;
+    }
+
+    .line {
+      font-size: clamp(1.25rem, 2.35vw, 2.3rem);
+      line-height: 1.55;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.95);
+      opacity: 0;
+      transform: translateY(35px) translateZ(-140px) scale(0.92);
+      transition: opacity 1.6s ease, transform 2.3s ease;
+    }
+
+    .line.visible {
+      opacity: 1;
+      transform: translateY(0) translateZ(85px) scale(1);
+    }
+
+    .hint {
+      position: absolute;
+      top: 6vh;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 12;
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.58);
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+
+    .controls {
+      position: absolute;
+      left: 50%;
+      bottom: 7vh;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      gap: 0.8rem;
+      padding: 0.7rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.42);
+      backdrop-filter: blur(12px);
+    }
+
+    button {
+      border: 1px solid rgba(255,255,255,0.24);
+      background: rgba(255,255,255,0.08);
+      color: #eee8dc;
+      border-radius: 999px;
+      padding: 0.7rem 1.1rem;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    button:hover { background: rgba(255,255,255,0.16); }
+
+    audio { display: none; }
+  </style>
+</head>
+
+<body>
+  <main class="film">
+    <div class="snow" id="snow"></div>
+    <div class="window"></div>
+    <div class="vignette"></div>
+
+    <div class="hint">Lecture immersive — à écouter au casque<br><span style="font-size:0.82rem; opacity:0.72;">Musique : Adoración Araujo</span></div>
+
+    <section class="content">
+      <div class="card" id="textCard">
+        <h1>Campus Clignancourt</h1>
+        <h2>Un autre ailleurs</h2>
+      </div>
+    </section>
+
+    <div class="controls">
+      <button id="playBtn" type="button">Commencer</button>
+      <button id="restartBtn" type="button">Reprendre au début</button>
+    </div>
+
+    <!-- IMPORTANT : le fichier music.mp3 doit être dans le même dossier que ce fichier HTML -->
+    <audio id="music" src="music.mp3" preload="auto"></audio>
+  </main>
+
+  <script>
+    const music = document.getElementById("music");
+    const playBtn = document.getElementById("playBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const textCard = document.getElementById("textCard");
+    const snow = document.getElementById("snow");
+
+    // IMPORTANT :
+    // Le fichier music.mp3 doit être dans le même dossier que ce fichier HTML.
+    // La musique peut se répéter, mais le texte continue grâce à un chronomètre indépendant.
+
+    const fragments = [
+      { time: 0, html: `<h1>Campus Clignancourt</h1><h2>Un autre ailleurs</h2>` },
+      { time: 8, text: "C’était en 2006, au creux de l’automne parisien." },
+      { time: 16, text: "Je demandai un congé de formation professionnelle, que j’obtins afin de terminer une licence de musique et de musicologie." },
+      { time: 28, text: "En reprenant ces études, je me rappelai ce professeur avec lequel nous avions partagé des instants de vie, lui et moi, sur les bancs de l’amphi du campus Clignancourt." },
+      { time: 45, text: "C’était une bâtisse construite à la va-vite, l’un des derniers exemples encore en usage de l’architecture Pailleron." },
+      { time: 58, text: "Lui était mon professeur ; moi, l’une de ses étudiantes." },
+      { time: 68, text: "Il existait entre nous un lien qui dépassait l’attraction physique." },
+      { time: 80, text: "Un lien intellectuel, émotionnel, voire spirituel, fondé sur l’admiration et le respect." },
+      { time: 94, text: "Nous nous trouvions tous deux à un instant charnière de nos vies." },
+      { time: 106, text: "Moi, je reprenais mes études. Lui devenait doyen du département de musique et musicologie." },
+      { time: 120, text: "C’était le début de la fin." },
+      { time: 130, text: "Je savais qu’à partir de ce moment-là, je ne serais plus jamais la même." },
+      { time: 145, text: "En 2006, j’obtins ma licence. En 2007, je suivis une formation et obtins une certification." },
+      { time: 160, text: "En 2008, je demandai le divorce à l’homme avec lequel j’avais partagé dix-sept années de ma vie." },
+      { time: 176, text: "Cette année-là, lui aussi s’apprêtait à quitter définitivement l’enseignement." },
+      { time: 188, text: "Il voulait se consacrer exclusivement à la recherche." },
+      { time: 200, text: "Alors, m’avait-il dit, il profitait une dernière fois de cette proximité avec la jeunesse." },
+      { time: 216, text: "Avant de ne plus travailler ensuite qu’avec des vieux." },
+      { time: 228, text: "C’est sans doute pour cette raison que nous déjeunions tous les midis ensemble à la cafétéria du campus." },
+      { time: 244, text: "D’abord avec d’autres étudiants, puis, très vite, lui et moi seuls." },
+      { time: 258, text: "Nous pouvions rester assis sur un banc sans parler." },
+      { time: 270, text: "Simplement réconfortés par la présence l’un de l’autre." },
+      { time: 284, text: "Ou bien nous parlions de Jean-Jacques Rousseau, de Diderot, de Voltaire, du siècle des Lumières." },
+      { time: 302, text: "Un jour que nous prenions l’air, assis l’un à côté de l’autre, il me dit :" },
+      { time: 316, text: "— Parfois, j’aimerais être dans un ailleurs…" },
+      { time: 330, text: "Je tournai la tête vers lui." },
+      { time: 340, text: "Une solitude profonde, plus profonde encore que ses yeux clairs, habitait son regard." },
+      { time: 358, text: "— Vous voulez dire… que vous aimeriez être ailleurs ?" },
+      { time: 372, text: "lui demandai-je, incertaine, préférant m’être trompée." },
+      { time: 386, text: "Mais comment tromper un homme de lettres aussi érudit que lui, qui connaissait la valeur exacte de chaque mot ?" },
+      { time: 405, text: "— Je n’ai pas dit ailleurs." },
+      { time: 416, text: "J’ai dit : un autre ailleurs." },
+      { time: 430, text: "Je ne parlai plus." },
+      { time: 440, text: "Je l’aurais voulu pourtant, mais je savais qu’il ne le fallait pas." },
+      { time: 456, text: "Alors nos regards se perdirent vers l’horizon." },
+      { time: 470, text: "Oubliant le béton armé et l’ossature métallique du campus." },
+      { time: 486, text: "Perdus dans un silence profond." },
+      { time: 500, text: "Mais liés tous deux par la solitude." }
+    ];
+
+    let currentIndex = -1;
+    let rafId = null;
+    let startTimestamp = null;
+    let pausedAt = 0;
+    let isRunning = false;
+
+    function createSnow() {
+      for (let i = 0; i < 130; i++) {
+        const flake = document.createElement("span");
+        flake.className = "flake";
+        flake.style.left = Math.random() * 120 + "vw";
+        flake.style.animationDuration = 5 + Math.random() * 9 + "s";
+        flake.style.animationDelay = Math.random() * -12 + "s";
+        flake.style.width = flake.style.height = 2 + Math.random() * 5 + "px";
+        flake.style.opacity = 0.25 + Math.random() * 0.75;
+        snow.appendChild(flake);
+      }
+    }
+
+    function showFragment(index) {
+      const fragment = fragments[index];
+      currentIndex = index;
+
+      if (fragment.html) {
+        textCard.innerHTML = fragment.html;
+        return;
+      }
+
+      textCard.innerHTML = `<div class="line">${fragment.text}</div>`;
+      requestAnimationFrame(() => {
+        const line = textCard.querySelector(".line");
+        if (line) line.classList.add("visible");
+      });
+    }
+
+    function getFilmTime() {
+      if (!startTimestamp) return pausedAt;
+      return pausedAt + (performance.now() - startTimestamp) / 1000;
+    }
+
+    function syncText() {
+      const t = getFilmTime();
+      let nextIndex = 0;
+
+      for (let i = 0; i < fragments.length; i++) {
+        if (t >= fragments[i].time) nextIndex = i;
+      }
+
+      if (nextIndex !== currentIndex) showFragment(nextIndex);
+
+      // Fin du film
+      const endTime = fragments[fragments.length - 1].time + 10;
+
+      if (t >= endTime) {
+        finishFilm();
+        return;
+      }
+
+      if (isRunning) {
+        rafId = requestAnimationFrame(syncText);
+      }
+    }
+
+    async function startFilm() {
+      try {
+        music.loop = true;
+        await music.play();
+
+        isRunning = true;
+        startTimestamp = performance.now();
+        playBtn.textContent = "Pause";
+
+        if (rafId) cancelAnimationFrame(rafId);
+        syncText();
+      } catch (error) {
+        console.error(error);
+        alert("Le son ne se lance pas. Vérifie que le fichier s’appelle exactement music.mp3 et qu’il est dans le même dossier que ce fichier HTML.");
+      }
+    }
+
+    function pauseFilm() {
+      pausedAt = getFilmTime();
+      startTimestamp = null;
+      isRunning = false;
+      music.pause();
+      playBtn.textContent = "Reprendre";
+      if (rafId) cancelAnimationFrame(rafId);
+    }
+
+    function finishFilm() {
+      isRunning = false;
+      playBtn.textContent = "Terminé";
+
+      if (rafId) cancelAnimationFrame(rafId);
+
+      // Fondu sonore progressif
+      let volume = music.volume;
+
+      const fadeAudio = setInterval(() => {
+        volume -= 0.02;
+
+        if (volume <= 0.02) {
+          clearInterval(fadeAudio);
+          music.pause();
+          music.currentTime = 0;
+          music.volume = 1;
+        } else {
+          music.volume = volume;
+        }
+      }, 120);
+
+      // Fondu du texte
+      textCard.style.transition = "opacity 8s ease";
+      textCard.style.opacity = "0";
+    }
+
+    playBtn.addEventListener("click", () => {
+      if (isRunning) {
+        pauseFilm();
+      } else {
+        startFilm();
+      }
+    });
+
+    restartBtn.addEventListener("click", () => {
+      pausedAt = 0;
+      startTimestamp = null;
+      currentIndex = -1;
+      music.currentTime = 0;
+      showFragment(0);
+      startFilm();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        playBtn.click();
+      }
+    });
+
+    createSnow();
+    showFragment(0);
+  </script>
+</body>
+</html>
