@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Génération Z</title>
+
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  background:#050505;
+  color:#f4efe7;
+  font-family:Georgia,"Times New Roman",serif;
+  overflow:hidden;
+}
+
+#screen{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:8vw;
+  background:radial-gradient(circle,#1b1b1b 0%,#050505 70%);
+}
+
+#text{
+  max-width:900px;
+  font-size:clamp(28px,4vw,56px);
+  line-height:1.35;
+  opacity:0;
+  transform:translateY(30px) scale(.96);
+  transition:opacity 1.8s ease, transform 2.2s ease;
+}
+
+#text.visible{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+#start{
+  position:fixed;
+  inset:0;
+  background:#050505;
+  color:#f4efe7;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+  text-align:center;
+}
+
+#start h1{
+  font-size:clamp(42px,7vw,90px);
+  font-weight:400;
+  letter-spacing:.08em;
+  margin:0 0 20px;
+}
+
+#start p{
+  opacity:.7;
+  font-size:18px;
+}
+
+button{
+  margin-top:30px;
+  padding:15px 34px;
+  background:#f4efe7;
+  color:#050505;
+  border:none;
+  font-size:17px;
+  cursor:pointer;
+  font-family:Georgia,"Times New Roman",serif;
+}
+
+#credit{
+  position:fixed;
+  bottom:24px;
+  width:100%;
+  text-align:center;
+  font-size:13px;
+  letter-spacing:1px;
+  opacity:.45;
+}
+
+.fadeout{
+  transition:opacity 7s ease !important;
+  opacity:0 !important;
+}
+</style>
+</head>
+
+<body>
+
+<div id="start">
+  <h1>GÉNÉRATION Z</h1>
+  <p>Texte et musique — à écouter au casque</p>
+  <button onclick="startFilm()">Commencer</button>
+</div>
+
+<div id="screen">
+  <div id="text"></div>
+</div>
+
+<div id="credit">Musique — Adoración Araujo</div>
+
+<audio id="music" src="music.mp3" preload="auto"></audio>
+
+<script>
+const music = document.getElementById("music");
+const text = document.getElementById("text");
+const start = document.getElementById("start");
+
+const sequence = [
+  [0, "Génération Z"],
+  [5000, "2005 voit l’émergence des réseaux sociaux."],
+  [10000, "La montée des plateformes comme YouTube."],
+  [16000, "Cela commençait à prendre de l’ampleur."],
+  [22000, "Pour nous tous."],
+  [27000, "On évoquait beaucoup la venue du téléphone portable."],
+  [34000, "Qui allait bientôt envahir l’espace public."],
+  [41000, "Et nos vies quotidiennes."],
+  [47000, "On commençait à parler de l’écologie."],
+  [54000, "L’ouragan Katrina avait mis en avant des problèmes de gestion des catastrophes."],
+  [64000, "Les mamans ne parlaient plus que du célèbre sorcier."],
+  [72000, "Le cinéma sera marqué par la sortie emblématique de Harry Potter."],
+  [83000, "On parlera du reste de la génération Harry Potter."],
+  [93000, "Pour ces enfants du troisième millénaire."],
+  [101000, "On regardait les séries à la télé."],
+  [108000, "Comme Desperate Housewives."],
+  [115000, "Chacune essayant de s’identifier à l’une des quatre femmes."],
+  [124000, "Brune."],
+  [128000, "Blonde."],
+  [132000, "Rousse."],
+  [136000, "Châtain."],
+  [142000, "2005 était la génération Harry Potter."],
+  [150000, "Des enfants du troisième millénaire."],
+  [158000, "Plus exactement, on parle de génération Z."],
+  [168000, "Pour désigner ceux qui sont nés entre 1990 et 2000."],
+  [178000, "Et qui ont grandi en étant marqués par l’univers de la saga."],
+  [190000, "Si je n’avais pas eu un enfant en l’an 2000…"],
+  [199000, "Peut-être que ce phénomène majeur n’aurait pas traversé mon monde."],
+  [210000, "Influençant les lectures et les films de ma fille."],
+  [219000, "Mais aussi ceux de mes élèves."],
+  [226000, "Et la culture populaire en général."],
+  [235000, "Cette influence s’est étendue sur plusieurs années."],
+  [244000, "Orphelin."],
+  [248000, "Parents morts."],
+  [252000, "Visite d’un géant."],
+  [256000, "Fils de magiciens."],
+  [260000, "Pouvoirs magiques."],
+  [265000, "L’amitié."],
+  [269000, "Le courage."],
+  [273000, "La bravoure."],
+  [277000, "Le bien."],
+  [281000, "Le mal."],
+  [285000, "L’école."],
+  [289000, "Le sorcier."],
+  [293000, "Poudlard."],
+  [300000, "Mais ne prononcez jamais son nom."],
+  [309000, "Voldemort."]
+];
+
+function showLine(line){
+  text.classList.remove("visible");
+  setTimeout(()=>{
+    text.innerHTML = line;
+    text.classList.add("visible");
+  },700);
+}
+
+function startFilm(){
+  start.style.display = "none";
+  music.loop = true;
+  music.volume = 1;
+  music.play();
+
+  sequence.forEach(item=>{
+    setTimeout(()=>showLine(item[1]), item[0]);
+  });
+
+  setTimeout(endFilm, 320000);
+}
+
+function endFilm(){
+  text.classList.add("fadeout");
+
+  let volume = music.volume;
+  const fade = setInterval(()=>{
+    volume -= 0.02;
+    if(volume <= 0){
+      clearInterval(fade);
+      music.pause();
+      music.currentTime = 0;
+    } else {
+      music.volume = volume;
+    }
+  },120);
+}
+</script>
+
+</body>
+</html>
